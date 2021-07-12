@@ -2,8 +2,10 @@ package com.readinglist.controller;
 
 import com.readinglist.domain.Book;
 import com.readinglist.domain.Reader;
+import com.readinglist.properties.AmazonProperties;
 import com.readinglist.repository.ReadingListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,10 +17,13 @@ import java.util.List;
 @RequestMapping("/")
 public class ReadingListController {
     private ReadingListRepository readingListRepository;
+    private AmazonProperties amazonProperties;
 
     @Autowired
-    public ReadingListController(ReadingListRepository readingListRepository){
+    public ReadingListController(ReadingListRepository readingListRepository,
+                                 AmazonProperties amazonProperties){ // AmazonProperties 주입
         this.readingListRepository=readingListRepository;
+        this.amazonProperties=amazonProperties;
     }
 
     @RequestMapping(method=RequestMethod.GET)
@@ -27,6 +32,7 @@ public class ReadingListController {
         if(readingList != null){
             model.addAttribute("books", readingList);
             model.addAttribute("reader", reader);
+            model.addAttribute("amazonID", amazonProperties.getAssociateId()); // 제휴 ID를 모델에 추가
         }
         return "readingList";
     }
