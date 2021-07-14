@@ -3,6 +3,7 @@ package com.readinglist.config;
 import com.readinglist.domain.Reader;
 import com.readinglist.repository.ReaderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -39,13 +40,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(new UserDetailsService() {
+        auth.userDetailsService(userDetailsService());
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return new UserDetailsService() {
             @Override
-            public UserDetails loadUserByUsername(String username)
-                    throws UsernameNotFoundException {
+            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
                 Optional<Reader> userDetails = readerRepository.findById(username);
                 return userDetails.orElseThrow(() -> new UsernameNotFoundException("사용자 이름 없음"));
             }
-        });
+        };
     }
+
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.userDetailsService(new UserDetailsService() {
+//            @Override
+//            public UserDetails loadUserByUsername(String username)
+//                    throws UsernameNotFoundException {
+//                Optional<Reader> userDetails = readerRepository.findById(username);
+//                return userDetails.orElseThrow(() -> new UsernameNotFoundException("사용자 이름 없음"));
+//            }
+//        });
+//    }
 }
